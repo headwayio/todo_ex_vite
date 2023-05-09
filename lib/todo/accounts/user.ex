@@ -5,6 +5,8 @@ defmodule Todo.Accounts.User do
   schema "users" do
     field :email, :string
     field :name, :string
+    has_many :projects, Todo.TaskManager.Project
+    has_many :tasks, through: [:projects, :tasks]
 
     timestamps()
   end

@@ -1,12 +1,18 @@
 defmodule TodoWeb.Router do
   use TodoWeb, :router
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  pipeline :graphql do
+    # We will place some code here later
   end
 
-  scope "/api", TodoWeb do
-    pipe_through :api
+  scope "/" do
+    pipe_through :graphql
+
+    forward "/graphql", Absinthe.Plug, schema: TodoWeb.Schema
+
+    if Mix.env() == :dev do
+      forward "/graphiql", Absinthe.Plug.GraphiQL, schema: TodoWeb.Schema
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

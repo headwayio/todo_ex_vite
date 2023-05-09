@@ -101,4 +101,13 @@ defmodule Todo.Accounts do
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+  # Graphql Dataloader for Associations
+  def data() do
+    Dataloader.Ecto.new(Todo.Repo, query: &query/2)
+  end
+
+  def query(queryable, _params) do
+    queryable
+  end
 end

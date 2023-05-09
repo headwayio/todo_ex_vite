@@ -197,4 +197,13 @@ defmodule Todo.TaskManager do
   def change_task(%Task{} = task, attrs \\ %{}) do
     Task.changeset(task, attrs)
   end
+
+  # Graphql Dataloader for Associations
+  def data() do
+    Dataloader.Ecto.new(Todo.Repo, query: &query/2)
+  end
+
+  def query(queryable, _params) do
+    queryable
+  end
 end
