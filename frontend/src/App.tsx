@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { gql, useQuery } from "@apollo/client";
+import "./App.css";
+
+const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      name
+      email
+      projects {
+        id
+        name
+        tasks {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  projects: Project[];
+}
+
+interface Project {
+  id: number;
+  name: string;
+  tasks: Task[];
+}
+
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { data, loading, error } = useQuery(GET_USERS, {});
+
+  if (loading) return <h1>Loading...</h1>;
+  if (error) return <p>{error.message}</p>;
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {data &&
+        data.users.map((user: User) => (
+          <div>
+            <h2>{user.name}</h2>
+            {user.projects.map((project: Project) => (
+              <>
+                <h3>{project.name}</h3>
+                <ul>
+                  {project.tasks.map((task: Task) => (
+                    <li key={task.id}>{task.title}</li>
+                  ))}
+                </ul>
+              </>
+            ))}
+          </div>
+        ))}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
