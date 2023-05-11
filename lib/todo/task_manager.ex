@@ -85,6 +85,11 @@ defmodule Todo.TaskManager do
       {:error, %Ecto.Changeset{}}
 
   """
+  def delete_project(project_id) when is_integer(project_id) do
+    get_project!(project_id)
+    |> Repo.delete()
+  end
+
   def delete_project(%Project{} = project) do
     Repo.delete(project)
   end
@@ -163,6 +168,12 @@ defmodule Todo.TaskManager do
       {:error, %Ecto.Changeset{}}
 
   """
+  def update_task(task_id, attrs) when is_integer(task_id) do
+    get_task!(task_id)
+    |> Task.changeset(attrs)
+    |> Repo.update()
+  end
+
   def update_task(%Task{} = task, attrs) do
     task
     |> Task.changeset(attrs)
@@ -181,6 +192,11 @@ defmodule Todo.TaskManager do
       {:error, %Ecto.Changeset{}}
 
   """
+  def delete_task(task_id) when is_integer(task_id) do
+    get_task!(task_id)
+    |> Repo.delete()
+  end
+
   def delete_task(%Task{} = task) do
     Repo.delete(task)
   end

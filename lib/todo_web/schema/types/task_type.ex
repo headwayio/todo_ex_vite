@@ -9,7 +9,8 @@ defmodule TodoWeb.Schema.Types.TaskType do
   object :task do
     field :id, :integer
     field :title, :string
-    field :string, :string
+    field :description, :string
+    field :completed, :boolean
     field :project, :project, resolve: dataloader(TaskManager)
   end
 
@@ -35,6 +36,22 @@ defmodule TodoWeb.Schema.Types.TaskType do
       arg(:project_id, non_null(:integer))
 
       resolve(&Resolvers.TaskManager.create_task/3)
+    end
+  end
+
+  object :update_task_mutation do
+    @desc """
+    Update task
+    """
+
+    @desc "Update a task"
+    field :update_task, :task do
+      arg(:task_id, non_null(:integer))
+      arg(:title, :string)
+      arg(:description, :string)
+      arg(:completed, :boolean)
+
+      resolve(&Resolvers.TaskManager.update_task/3)
     end
   end
 end

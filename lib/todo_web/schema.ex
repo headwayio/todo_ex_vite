@@ -28,6 +28,8 @@ defmodule TodoWeb.Schema do
   mutation do
     import_fields(:create_user_mutation)
     import_fields(:create_project_mutation)
+    import_fields(:delete_project_mutation)
     import_fields(:create_task_mutation)
+    import_fields(:update_task_mutation)
   end
 end

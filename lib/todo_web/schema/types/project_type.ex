@@ -36,4 +36,17 @@ defmodule TodoWeb.Schema.Types.ProjectType do
       resolve(&Resolvers.TaskManager.create_project/3)
     end
   end
+
+  object :delete_project_mutation do
+    @desc """
+    delete project
+    """
+
+    @desc "Deletes a project"
+    field :delete_project, :project do
+      arg(:project_id, non_null(:integer))
+
+      resolve(&Resolvers.TaskManager.delete_project/3)
+    end
+  end
 end

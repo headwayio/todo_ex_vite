@@ -16,4 +16,16 @@ defmodule TodoWeb.Resolvers.TaskManager do
   def create_task(_parent, args, _context) do
     TaskManager.create_task(args)
   end
+
+  def update_task(_parent, %{task_id: task_id} = args, _context) do
+    TaskManager.update_task(task_id, args)
+  end
+
+  def delete_project(_parent, %{project_id: project_id}, _context) do
+    TaskManager.delete_project(project_id)
+  end
+
+  def delete_task(_parent, %{task_id: task_id}, _context) do
+    TaskManager.create_task(task_id)
+  end
 end
