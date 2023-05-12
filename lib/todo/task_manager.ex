@@ -219,6 +219,15 @@ defmodule Todo.TaskManager do
     Dataloader.Ecto.new(Todo.Repo, query: &query/2)
   end
 
+  def query(Task = queryable, _params) do
+    queryable
+    |> order_by([t],
+      desc:
+        fragment("case when ? then 1 when ? is null then 2 else 3 end", t.completed, t.completed),
+      asc: t.title
+    )
+  end
+
   def query(queryable, _params) do
     queryable
   end
