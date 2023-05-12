@@ -16,6 +16,7 @@ import {
   FiMoreVertical,
 } from 'react-icons/fi';
 import { ButtonIcon } from './components/atoms/button_icon';
+import { Dropdown } from './components/molecules/dropdown';
 
 type EventType =
   | React.ChangeEvent<HTMLInputElement>
@@ -133,29 +134,26 @@ function App() {
                         setProjectSettingsId(project.id);
                         setShowProjectSettings(!showProjectSettings);
                       }}
+                      onBlur={() => setShowProjectSettings(false)}
                     >
                       <FiMoreVertical />
+                      <Dropdown
+                        show={
+                          showProjectSettings &&
+                          projectSettingsId === project.id
+                        }
+                        fields={[
+                          {
+                            label: 'Edit',
+                            click: () => handleDeleteProject(project.id),
+                          },
+                          {
+                            label: 'Delete',
+                            click: () => handleDeleteProject(project.id),
+                          },
+                        ]}
+                      />
                     </ButtonIcon>
-                    <div
-                      id='dropdown'
-                      className={`${
-                        showProjectSettings && projectSettingsId === project.id
-                          ? ''
-                          : 'hidden'
-                      } absolute right-2 top-8 z-10 bg-gray-100 divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
-                    >
-                      <ul
-                        className=' text-sm text-gray-700 dark:text-gray-200'
-                        aria-labelledby='dropdownDefaultButton'
-                      >
-                        <li
-                          onClick={() => handleDeleteProject(project.id)}
-                          className='block cursor-pointer rounded-lg p-4 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white'
-                        >
-                          Delete
-                        </li>
-                      </ul>
-                    </div>
                   </div>
                 </div>
                 <hr className='my-2' />
