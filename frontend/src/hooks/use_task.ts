@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client';
 import { useState } from 'react';
+import { useProject } from './use_project';
 
 export interface Task {
   id: number;
@@ -8,10 +9,10 @@ export interface Task {
   description?: string;
 }
 
-interface INewTask {
+export interface INewTask {
   title: string;
   description: string;
-  projectId: number | undefined;
+  project_id: number | undefined;
 }
 
 const ADD_TASK = gql`
@@ -44,35 +45,33 @@ const UPDATE_TASK = gql`
   }
 `;
 
-export const useTask = (refetch: () => void) => {
+export const useTask = () => {
+  const [tasks, setTasks] = useState();
   const [newTask, setNewTask] = useState<INewTask>({
     title: '',
     description: '',
-    projectId: undefined,
+    project_id: undefined,
   });
 
   const [addTask, { error: addTaskError }] = useMutation(ADD_TASK, {
-    onCompleted: (data) => {
+    onCompleted: () => {
       setNewTask({
         title: '',
         description: '',
-        projectId: undefined,
+        project_id: undefined,
       });
-      console.log(data.task);
-      refetch();
     },
   });
 
-  const [updateTask, { error: updateTaskError }] = useMutation(UPDATE_TASK, {
-    onCompleted: (data) => {
-      console.log(data.task);
-      refetch();
-    },
-  });
+  console.log(tasks && tasks[47]);
+
+  const [updateTask, { error: updateTaskError }] = useMutation(UPDATE_TASK);
 
   const error = addTaskError || updateTaskError;
 
   return {
+    tasks,
+    setTasks,
     addTask,
     updateTask,
     newTask,
