@@ -1,7 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CORE_USER_FIELDS, User } from './use_user';
-import { Task } from './use_task';
+import { Task, useTask } from './use_task';
 
 export interface Project {
   id: number;
@@ -32,7 +32,7 @@ const CORE_PROJECT_FIELDS = gql`
   }
 `;
 
-const GET_PROJECTS = gql`
+export const GET_PROJECTS = gql`
   ${CORE_PROJECT_FIELDS}
   query GetProjects {
     projects {
@@ -41,7 +41,7 @@ const GET_PROJECTS = gql`
   }
 `;
 
-const ADD_PROJECT = gql`
+export const ADD_PROJECT = gql`
   ${CORE_PROJECT_FIELDS}
   mutation AddProject($name: String!, $user_id: Int!) {
     project: createProject(name: $name, userId: $user_id) {
@@ -50,7 +50,7 @@ const ADD_PROJECT = gql`
   }
 `;
 
-const DELETE_PROJECT = gql`
+export const DELETE_PROJECT = gql`
   mutation DeleteProject($project_id: Int!) {
     project: deleteProject(projectId: $project_id) {
       id
@@ -59,18 +59,21 @@ const DELETE_PROJECT = gql`
 `;
 
 export const useProject = () => {
+  const { setTasks } = useTask();
   const [projects, setProjects] = useState<Project[] | undefined>();
   const [newProject, setNewProject] = useState<INewProject>({
     name: '',
     userId: 1,
   });
-  const {
-    loading,
-    error: fetchProjectError,
-    refetch,
-  } = useQuery(GET_PROJECTS, {
+  const { loading, error: fetchProjectError } = useQuery(GET_PROJECTS, {
     onCompleted: (data) => {
       setProjects(data.projects);
+      setTasks(
+        data.projects.reduce((object: any, project: Project) => {
+          object[project.id] = project.tasks;
+          return object;
+        }, {})
+      );
     },
   });
 
@@ -86,23 +89,29 @@ export const useProject = () => {
     {
       onCompleted: (data) => {
         setProjects(
-          projects &&
-            projects.filter((project) => project.id !== data.project.id)
+          projects?.filter((project) => project.id !== data.project.id)
         );
       },
     }
   );
+
+  const removeProject = (project_id: number) => {
+    deleteProject({
+      variables: {
+        project_id: project_id,
+      },
+    });
+  };
 
   const error = fetchProjectError || addProjectError || deleteProjectError;
 
   return {
     projects,
     addProject,
-    deleteProject,
+    removeProject,
     newProject,
     setNewProject,
     loading,
     error,
-    refetch,
   };
 };

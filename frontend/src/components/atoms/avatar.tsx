@@ -9,7 +9,7 @@ export const Avatar = ({ initials }: Props) => {
       ? `${initialsArray[0][0].toUpperCase()}${initialsArray[
           initialsArray.length - 1
         ][0].toUpperCase()}`
-      : initialsArray[0];
+      : initialsArray[0][0];
   };
 
   return (

@@ -12,7 +12,6 @@ export const Modal = ({
 }: PropsWithChildren<Props>) => {
   return (
     <div
-      id='authentication-modal'
       onClick={handleClose}
       tabIndex={-1}
       aria-hidden='true'

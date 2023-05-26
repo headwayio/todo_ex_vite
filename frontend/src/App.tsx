@@ -1,81 +1,27 @@
 import React, { useState } from 'react';
 import { Button } from './components/atoms/button';
-import { Avatar } from './components/atoms/avatar';
-import { Modal } from './components/atoms/modal';
+import { Modal } from './components/molecules/modal';
 import { SimpleForm } from './components/molecules/simple_form';
 import { Card } from './components/molecules/card';
 import { Alert } from './components/molecules/alert';
-import { useProject } from './hooks/use_project';
+import { INewProject, useProject } from './hooks/use_project';
 import { useUser } from './hooks/use_user';
-import { useTask } from './hooks/use_task';
-import {
-  FiSquare,
-  FiCheckSquare,
-  FiEdit,
-  FiPlus,
-  FiMoreVertical,
-} from 'react-icons/fi';
-import { ButtonIcon } from './components/atoms/button_icon';
-import { Dropdown } from './components/molecules/dropdown';
-
-type EventType =
-  | React.ChangeEvent<HTMLInputElement>
-  | React.ChangeEvent<HTMLSelectElement>;
+import { ProjectCard } from './components/organism/project_card';
 
 function App() {
   const {
     projects,
     addProject,
-    deleteProject,
+    removeProject,
     newProject,
     setNewProject,
     error,
-    refetch,
   } = useProject();
   const { users } = useUser();
-  const { addTask, updateTask, newTask, setNewTask } = useTask(refetch);
 
   const [showAddProject, setShowAddProject] = useState(false);
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [showProjectSettings, setShowProjectSettings] = useState(false);
-  const [projectSettingsId, setProjectSettingsId] = useState(1);
   const handleAddProjectOpen = () => setShowAddProject(true);
   const handleAddProjectClose = () => setShowAddProject(false);
-
-  const handleAddTaskOpen = (project_id: number) => {
-    setNewTask({
-      ...newTask,
-      projectId: project_id,
-    });
-    setShowAddTask(true);
-  };
-  const handleAddTaskClose = () => setShowAddTask(false);
-
-  const handleNameUpdate = (e: EventType) =>
-    setNewProject({
-      ...newProject,
-      name: e.target.value,
-    });
-
-  const handleUserUpdate = (e: EventType) =>
-    setNewProject({
-      ...newProject,
-      userId: parseInt(e.target.value),
-    });
-
-  const handleChange = (e: EventType) => {
-    const name = e.target.name;
-    setNewTask({
-      ...newTask,
-      [name]: e.target.value,
-    });
-  };
-
-  const handleTaskCompletion = (task_id: number, completed: boolean) => {
-    updateTask({
-      variables: { completed: !completed, task_id: task_id },
-    });
-  };
 
   const handleAddProject = (e: React.FormEvent<EventTarget>) => {
     e.preventDefault();
@@ -85,22 +31,8 @@ function App() {
     setShowAddProject(false);
   };
 
-  const handleAddTask = (e: React.FormEvent<EventTarget>) => {
-    e.preventDefault();
-    addTask({
-      variables: {
-        title: newTask.title,
-        description: newTask.description,
-        project_id: newTask.projectId,
-      },
-    });
-    setShowAddTask(false);
-  };
-
-  const handleDeleteProject = (projectId: number) => {
-    deleteProject({
-      variables: { project_id: projectId },
-    });
+  const handleRemoveProject = (project_id: number) => {
+    removeProject(project_id);
   };
 
   return (
@@ -118,138 +50,40 @@ function App() {
       <div className='grid grid-cols-2 gap-8'>
         {projects
           ? projects.map((project) => (
-              <Card key={project.id}>
-                <div className='relative flex items-center gap-4'>
-                  <Avatar initials={project.user.name} />
-                  <h3 className='text-lg font-semibold flex-grow'>
-                    {project.name}
-                  </h3>
-
-                  <div>
-                    <ButtonIcon onClick={() => handleAddTaskOpen(project.id)}>
-                      <FiPlus />
-                    </ButtonIcon>
-                    <ButtonIcon
-                      onClick={() => {
-                        setProjectSettingsId(project.id);
-                        setShowProjectSettings(!showProjectSettings);
-                      }}
-                      onBlur={() => setShowProjectSettings(false)}
-                    >
-                      <FiMoreVertical />
-                      <Dropdown
-                        show={
-                          showProjectSettings &&
-                          projectSettingsId === project.id
-                        }
-                        fields={[
-                          {
-                            label: 'Edit',
-                            click: () => handleDeleteProject(project.id),
-                          },
-                          {
-                            label: 'Delete',
-                            click: () => handleDeleteProject(project.id),
-                          },
-                        ]}
-                      />
-                    </ButtonIcon>
-                  </div>
-                </div>
-                <hr className='my-2' />
-                <div className='flex flex-col gap-4'>
-                  {project.tasks.map((task) => (
-                    <Card
-                      key={task.id}
-                      horizontalStack={true}
-                      disabled={task.completed}
-                    >
-                      {task.completed ? (
-                        <FiCheckSquare
-                          className='cursor-pointer'
-                          onClick={() =>
-                            handleTaskCompletion(task.id, task.completed)
-                          }
-                        />
-                      ) : (
-                        <FiSquare
-                          className='cursor-pointer'
-                          onClick={() =>
-                            handleTaskCompletion(task.id, task.completed)
-                          }
-                        />
-                      )}
-                      <div className='flex flex-col flex-grow'>
-                        <p>{task.title}</p>
-                        <p className='text-xs text-gray-500'>
-                          {task.description}
-                        </p>
-                      </div>
-                      {!task.completed && (
-                        <div>
-                          <ButtonIcon>
-                            <FiEdit />
-                          </ButtonIcon>
-                          <ButtonIcon>
-                            <FiMoreVertical />
-                          </ButtonIcon>
-                        </div>
-                      )}
-                    </Card>
-                  ))}
-                </div>
-              </Card>
+              <ProjectCard
+                key={project.id}
+                project={project}
+                deleteProject={handleRemoveProject}
+              />
             ))
           : [0, 1, 2, 3].map((i) => <Card key={i} loading={true} />)}
       </div>
       <Modal show={showAddProject} handleClose={handleAddProjectClose}>
         <h3 className='text-lg font-semibold uppercase mb-8'>New project</h3>
-        <SimpleForm
+        <SimpleForm<INewProject>
+          aria-label='Add a new project'
           handleSubmit={handleAddProject}
+          state={newProject}
+          setState={setNewProject}
           fields={[
             {
               type: 'text',
               label: 'Project name',
+              name: 'name',
               placeholder: 'Do the thing...',
               id: 'project_name',
               value: newProject.name,
-              onChange: handleNameUpdate,
             },
             {
               type: 'select',
               id: 'project_user',
+              name: 'userId',
               label: 'User',
               value: newProject.userId,
               options: users?.map((user) => ({
                 value: user.id,
                 text: user.name,
               })),
-              onChange: handleUserUpdate,
-            },
-          ]}
-        />
-      </Modal>
-      <Modal show={showAddTask} handleClose={handleAddTaskClose}>
-        <h3 className='text-lg font-semibold uppercase mb-8'>New task</h3>
-        <SimpleForm
-          handleSubmit={handleAddTask}
-          fields={[
-            {
-              type: 'text',
-              name: 'title',
-              label: 'Title',
-              placeholder: 'Buy a shovel',
-              id: 'task_title',
-              value: newTask.title,
-              onChange: handleChange,
-            },
-            {
-              type: 'text',
-              name: 'description',
-              label: 'Description',
-              id: 'task_description',
-              value: newTask.description,
-              onChange: handleChange,
             },
           ]}
         />
