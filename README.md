@@ -30,7 +30,7 @@ Elixir is a really powerful tool that has been out for several years. Though Eli
 
 ### Prerequisites
 
-Before you get started, there are a few things you should have installed on your system. You can click the links below to find installation instructions.
+Before you get started, there are a few things you should have installed on your system.
 
 * Postgres
 * Erlang
@@ -53,13 +53,18 @@ Create the database, install dependencies, and seed the initial user data
 mix setup
 ```
 
-Run the app
+Run the backend
 ```
-mix start
+mix phx.server
+```
+
+Run the frontend
+```
+cd frontend && pnpm run dev
 ```
 
 You should now be able to visit the following urls to play with the application:
 
-**Frontend**: http://localhost:4000/graphiql
+**GraphQL API**: http://localhost:4000/graphiql
 
-**Backend**: http://localhost:5173
+**Frontend**: http://localhost:5173
