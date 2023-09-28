@@ -60,6 +60,6 @@ mix start
 
 You should now be able to visit the following urls to play with the application:
 
-**Frontend**: http://localhost:4000/graphiql
+**GraphQL API**: http://localhost:4000/graphiql
 
-**Backend**: http://localhost:5173
+**Frontend**: http://localhost:5173
