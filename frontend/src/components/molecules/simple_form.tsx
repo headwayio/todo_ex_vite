@@ -31,12 +31,12 @@ type Option = {
   text: string;
 };
 
-export const SimpleForm = ({ handleSubmit, fields }: Props) => {
+export const SimpleForm = ({ handleSubmit, fields, ...rest }: Props) => {
   const inputClass =
     'mb-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-zinc-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} {...rest}>
       {fields.map((field) => (
         <div key={field.id}>
           {field.label && (
