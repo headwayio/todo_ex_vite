@@ -32,7 +32,7 @@ const CORE_PROJECT_FIELDS = gql`
   }
 `;
 
-const GET_PROJECTS = gql`
+export const GET_PROJECTS = gql`
   ${CORE_PROJECT_FIELDS}
   query GetProjects {
     projects {
@@ -41,7 +41,7 @@ const GET_PROJECTS = gql`
   }
 `;
 
-const ADD_PROJECT = gql`
+export const ADD_PROJECT = gql`
   ${CORE_PROJECT_FIELDS}
   mutation AddProject($name: String!, $user_id: Int!) {
     project: createProject(name: $name, userId: $user_id) {
@@ -50,7 +50,7 @@ const ADD_PROJECT = gql`
   }
 `;
 
-const DELETE_PROJECT = gql`
+export const DELETE_PROJECT = gql`
   mutation DeleteProject($project_id: Int!) {
     project: deleteProject(projectId: $project_id) {
       id

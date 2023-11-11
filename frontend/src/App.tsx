@@ -205,6 +205,7 @@ function App() {
       <Modal show={showAddProject} handleClose={handleAddProjectClose}>
         <h3 className='text-lg font-semibold uppercase mb-8'>New project</h3>
         <SimpleForm
+          aria-label='Add a new project'
           handleSubmit={handleAddProject}
           fields={[
             {

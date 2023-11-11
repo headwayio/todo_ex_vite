@@ -16,7 +16,7 @@ export const CORE_USER_FIELDS = gql`
   }
 `;
 
-const GET_USERS = gql`
+export const GET_USERS = gql`
   ${CORE_USER_FIELDS}
   query GetUsers {
     users {
